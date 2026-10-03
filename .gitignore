@@ -1,3 +1,6 @@
 .DS_Store
 __pycache__/
 *.pyc
+
+# Local demand build records
+**/profile/demand/jeju_hvdc_load_summary_*.json

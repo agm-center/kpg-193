@@ -14,7 +14,7 @@ If you use the KPG 193 test system in your work, please cite:
 # KPG 193 Test System
 
 ![License: ODbL](https://img.shields.io/badge/License-ODbL_1.0-blue.svg)
-![Version: v2.0](https://img.shields.io/badge/Version-v2.0-green.svg)
+![Version: v2.0.0](https://img.shields.io/badge/Version-v2.0.0-green.svg)
 ![Status: Active](https://img.shields.io/badge/Status-Active-brightgreen.svg)
 
 ![KPG 193 System Overview](kpg193.png)
@@ -30,185 +30,138 @@ The dataset supports research on decarbonization, optimal power flow, resource a
 
 ## Key Features
 
-- **MATPOWER-compatible**: Standard MATPOWER v2 case file for MATLAB, Octave, and MATPOWER-based tools.
-- **Full temporal resolution**: 8,760 hourly data points for demand and renewable profiles.
-- **Renewable capacity by bus**: Wind, solar, and hydro capacity data at each bus.
-- **Network metadata**: Generator, pumped-storage hydro, and expansion metadata included.
-- **Open and reproducible**: Released under ODbL 1.0 with transparent sourcing.
-- **Versioned and maintained**: Regular updates with documented version history.
+- **MATPOWER-compatible**: MATPOWER v2 case files in `.m` and `.mat` formats.
+- **Annual datasets for 2022–2025**: A separate 193-bus base system and hourly inputs for each year.
+- **Network metadata**: Bus, line, conventional generator, hydro, and pumped-storage metadata.
+- **Hourly profiles**: Demand, unit commitment, renewable generation ratios, and weather data for the corresponding year.
+- **Hydro and pumped-storage inputs**: Unit and group metadata, capacity data, hourly output ratios, and daily group generation energy constraints.
+- **Open and reproducible**: Released under ODbL 1.0 with documented data sources.
 
 ## System Overview
 
-| Component | Count |
-|-----------|------:|
-| Buses | 193 |
-| Conventional generators | 201 |
-| Transmission lines (AC) | 385 |
-| DC lines | 2 |
-| Voltage levels | 154 / 345 / 765 kV |
-| Renewable types | Wind, Solar, Hydro |
-| Temporal resolution | 8,760 hours (24 h × 365 days) |
+| Year | Buses | Conventional generators | AC branch rows | DC links | Hydro units | Pumped-storage units | Hourly periods |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| 2022 | 193 | 183 | 724 | 1 | 41 | 16 | 8,760 |
+| 2023 | 193 | 188 | 734 | 2 | 39 | 16 | 8,760 |
+| 2024 | 193 | 193 | 742 | 2 | 39 | 16 | 8,784 |
+| 2025 | 193 | 190 | 746 | 2 | 39 | 16 | 8,760 |
+
+The AC branch count is the number of independent circuit rows in `mpc.branch`. The base system includes the highest voltage layer for each route. Conventional generators are represented in `mpc.gen`; hydro and pumped-storage units are supplied separately in metadata and profiles.
 
 ## Repository Structure
 
+```text
+├── kpg193_v2_0_0_2022/
+├── kpg193_v2_0_0_2023/
+├── kpg193_v2_0_0_2024/
+├── kpg193_v2_0_0_2025/
+├── README.md
+├── LICENSE
+└── kpg193.png
 ```
-kpg193_v2_0/
-├── network/
-│   ├── m/
-│   │   └── KPG193_ver2_0.m              # MATPOWER v2 case file
-│   ├── mat/
-│   │   └── KPG193_ver2_0.mat            # MATLAB MAT file
-│   └── metadata/
-│       ├── bus_metadata/
-│       │   └── bus_metadata_2025.csv     # Bus geo-coordinates and names
-│       ├── generator_metadata/
-│       │   └── generator_metadata_2025.csv
-│       └── psh_metadata/
-│           ├── hydro_unit_metadata_2025.csv
-│           ├── psh_child_metadata_2025.csv
-│           └── psh_group_metadata_2025.csv
-├── renewables_capacity/
-│   ├── wind_generators_2025.csv          # Wind capacity by bus
-│   ├── solar_generators_2025.csv         # Solar capacity by bus
-│   └── hydro_generators_2025.csv         # Hydro capacity by bus
-├── mustoff/
-│   └── mustoff.csv                       # Generator must-off schedules
-└── profile/
-    ├── demand/
-    │   └── demand_{1..365}.csv           # Hourly demand (P, Q) per bus
-    ├── commitment_decision/
-    │   └── commitment_decision_{1..365}.csv
-    └── renewables/
-        └── renewables_{1..365}.csv       # Hourly renewable generation ratios per bus
+
+Each year folder has the following structure. File names containing `<year>` use that folder's year; daily profile files use the day of year.
+
+```text
+network/
+├── m/kpg193_v2_0_0_<year>.m
+├── mat/kpg193_v2_0_0_<year>.mat
+└── metadata/
+    ├── bus_metadata/
+    ├── line_metadata/
+    ├── generator_metadata/
+    └── hydropower_metadata/
+profile/
+├── demand/demand_<day>.csv
+├── commitment_decision/commitment_decision_<day>.csv
+├── renewables/renewables_<day>.csv
+└── weather/weather_<day>.csv
+constraints/
+└── hydropower_group_energy_constraints_<year>.csv
+renewables_capacity/
+├── solar_generators_<year>.csv
+├── wind_generators_<year>.csv
+└── hydropower_generators_<year>.csv
+mustoff/
+└── mustoff.csv
 ```
 
 ## Data Description
 
-### Network Case File — `KPG193_ver2_0.m`
+### Network Case Files
 
-A standard MATPOWER v2 case file (`baseMVA = 100`) containing the following data structures:
+The `.m` and `.mat` files contain MATPOWER cases with `baseMVA = 100`. Conventional generator parameters and costs are in `mpc.gen`, `mpc.gencost`, and `mpc.genthermal`. AC circuits are in `mpc.branch`, and DC links are in `mpc.dcline`.
 
-| Structure | Description |
-|-----------|-------------|
-| `mpc.bus` | 193 buses with type, demand (Pd/Qd), voltage limits, base kV, and area |
-| `mpc.gen` | 122 conventional generators with dispatch limits and voltage setpoints |
-| `mpc.branch` | 359 AC transmission lines/transformers with impedance and rating data |
-| `mpc.gencost` | Generator cost curves (polynomial format) |
-| `mpc.genthermal` | Thermal generator parameters |
-| `mpc.areas` | Area definitions with price reference buses |
-| `mpc.dcline` | HVDC line data |
-| `mpc.dclinecost` | HVDC line cost data |
+The initial operating values correspond to January 1, hour 1 of the relevant year. The case's `Pd` and `Qd` are net loads at that operating point, after renewable, hydro, and pumped-storage injections. Annual demand and generation profiles are provided separately for time-series studies.
 
-### Bus Metadata — `bus_metadata_2025.csv`
+### Metadata and Capacity
 
-| Column | Description |
-|--------|-------------|
-| `bus_id` | Bus number (1–193) |
-| `Latitude` | Geographic latitude (WGS 84) |
-| `Longitude` | Geographic longitude (WGS 84) |
-| `name_Korean` | Bus name in Korean |
-| `name_English` | Bus name in English |
+Bus and line metadata describe the network, and conventional generator metadata corresponds to `mpc.gen`. Hydro and pumped-storage metadata is in `hydropower_metadata/`, with separate unit and group tables. `unit_id` identifies a unit, and `group_id` links units to their group. These IDs belong to the corresponding year.
 
-### Renewable Capacity — `{wind,solar,hydro}_generators_2025.csv`
+Solar and wind capacities are provided by bus. `hydropower_generators_<year>.csv` provides bus-level hydro and pumped-storage capacities, identified by `Type` (`hydro` or `psh`). Hydro and pumped-storage units are not additional rows in `mpc.gen`.
 
-| Column | Description |
-|--------|-------------|
-| `bus_ID` | Bus number (1–193) |
-| `Type` | Generator type (`Wind`, `Solar`, or `Hydro`) |
-| `Pmax [MW]` | Maximum active power capacity |
-| `Pmin [MW]` | Minimum active power output |
+### Hourly Profiles
 
-### Demand Profiles — `demand_{d}.csv`
+Each daily CSV contains hourly observations, with days numbered 1–365, or 1–366 for 2024.
 
-One file per day (`d` = 1–365), each containing 24 × 193 rows.
+| Folder | Contents |
+|---|---|
+| `profile/demand/` | Active and reactive demand by hour and bus: `demandP`, `demandQ` |
+| `profile/commitment_decision/` | Unit status by hour and `generator_id` |
+| `profile/renewables/` | Solar, wind, hydro, and pumped-storage ratios by hour and bus |
+| `profile/weather/` | Longwave flux, temperature, wind components, and wind speed by hour and bus |
 
-| Column | Description |
-|--------|-------------|
-| `hour` | Hour of the day (1–24) |
-| `bus_id` | Bus number (1–193) |
-| `demandP` | Active power demand (MW) |
-| `demandQ` | Reactive power demand (Mvar) |
+Commitment IDs 1–N correspond to the N conventional generator rows. IDs N+1–N+16 correspond to pumped-storage units in their metadata order.
 
-### Renewable Profiles — `renewables_{d}.csv`
+For hydro and pumped-storage profiles, output in MW equals the profile ratio times the corresponding bus-level turbine `Pmax`. Pumped-storage ratios represent net injection (generation minus pumping) and may be negative, including below −1 when pump capacity exceeds turbine capacity.
 
-One file per day (`d` = 1–365), each containing 24 × 193 rows. Values represent normalized generation ratios (0–1) relative to installed capacity.
+### Energy Constraints and Outage Schedules
 
-| Column | Description |
-|--------|-------------|
-| `hour` | Hour of the day (1–24) |
-| `bus_id` | Bus number (1–193) |
-| `pv_profile_ratio` | Solar PV generation ratio |
-| `wind_profile_ratio` | Wind generation ratio |
-| `hydro_profile_ratio` | Hydro generation ratio |
+`hydropower_group_energy_constraints_<year>.csv` contains daily group generation energy limits in MWh. The group number in each column refers to `group_id` in that year's group metadata. Pumping power limits, efficiency, and storage energy limits are supplied in the hydro and pumped-storage metadata.
+
+`mustoff/mustoff.csv` provides outage schedules for conventional generators, hydro units, and pumped-storage units.
 
 ## Getting Started
-
-### 1. Download the Data
 
 Clone this repository:
 
 ```bash
-git clone https://github.com/agm-center/kpg-testgrid.git
-cd kpg-testgrid
+git clone https://github.com/agm-center/kpg-193.git
+cd kpg-193
 ```
 
-### 2. Load in MATLAB / Octave
-
-Add the case file to your MATLAB path and load it directly:
+Load a case in MATLAB or Octave with MATPOWER on the path:
 
 ```matlab
-addpath('kpg193_v2_0/network/m');
-mpc = KPG193_ver2_0;
-
-% Run a power flow
-results = runpf(mpc);
-
-% Run an optimal power flow
-results = runopf(mpc);
+addpath('kpg193_v2_0_0_2025/network/m');
+mpc = kpg193_v2_0_0_2025;
 ```
 
-### 3. Load in Python
-
-Use pandas to work with the CSV data:
+Read CSV data in Python:
 
 ```python
+from pathlib import Path
 import pandas as pd
 
-# Load bus locations
-buses = pd.read_csv('kpg193_v2_0/network/metadata/bus_metadata/bus_metadata_2025.csv')
-
-# Load renewable capacity
-wind = pd.read_csv('kpg193_v2_0/renewables_capacity/wind_generators_2025.csv')
-solar = pd.read_csv('kpg193_v2_0/renewables_capacity/solar_generators_2025.csv')
-
-# Load a single day's demand profile (e.g., day 1)
-demand = pd.read_csv('kpg193_v2_0/profile/demand/demand_1.csv')
-
-# Load all 365 days into one DataFrame
-demand_all = pd.concat(
-    [pd.read_csv(f'kpg193_v2_0/profile/demand/demand_{d}.csv').assign(day=d)
-     for d in range(1, 366)],
-    ignore_index=True,
+year = 2025
+root = Path(f'kpg193_v2_0_0_{year}')
+demand = pd.read_csv(root / 'profile/demand/demand_1.csv', encoding='utf-8-sig')
+generators = pd.read_csv(
+    root / f'network/metadata/generator_metadata/generator_metadata_{year}.csv',
+    encoding='utf-8-sig',
 )
-```
-
-To load the MATPOWER case file in Python, you can use [oct2py](https://oct2py.readthedocs.io/) (requires GNU Octave):
-
-```python
-from oct2py import octave
-octave.addpath('kpg193_v2_0/network/m')
-mpc = octave.KPG193_ver2_0()
 ```
 
 ## Data Sources
 
-For a detailed description of the data construction methodology, see the accompanying paper [https://arxiv.org/abs/2411.14756](https://arxiv.org/abs/2411.14756).
+For the data construction methodology, see the accompanying paper [KPG 193: A Synthetic Korean Power Grid Test System for Decarbonization Studies](https://arxiv.org/abs/2411.14756).
 
 ## Version History
 
 | Version | Updated | Major changes |
 |---|---|---|
-| **v2.0** | 2026-06 | system-demand-based profiles; refined generator parameters; expanded metadata incl. pumped storage |
+| **v2.0.0** | 2026-10-03 | Base-system datasets for 2022–2025; updated network cases, metadata, hourly profiles, and hydro/pumped-storage inputs |
+| **v2.0.0-preview** | 2026-06 | Previous public 2025 dataset with system-demand-based profiles, refined generator parameters, and pumped-storage metadata |
 | **v1.5** | 2025-12 | Generator locations corrected |
 | **v1.4** | 2025-09 | Bus numbering standardized; clustering improved |
 | **v1.3** | 2025-07 | Renewable profiles fixed |
@@ -216,7 +169,7 @@ For a detailed description of the data construction methodology, see the accompa
 | **v1.1** | 2024-12 | Slack bus changed |
 | **v1.0** | 2024-11 | Initial public release |
 
-
+The previous public dataset is available as [v2.0.0-preview](https://github.com/agm-center/kpg-193/releases/tag/v2.0.0-preview).
 
 ## Documentation
 

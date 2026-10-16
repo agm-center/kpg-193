@@ -92,6 +92,8 @@ mustoff/
 
 The `.m` and `.mat` files contain MATPOWER cases with `baseMVA = 100`. Conventional generator parameters and costs are in `mpc.gen`, `mpc.gencost`, and `mpc.genthermal`. AC circuits are in `mpc.branch`, and DC links are in `mpc.dcline`.
 
+For every AC circuit in the 2022–2025 cases, `rateB = 1.2 × rateA` and `rateC = 1.5 × rateA` (MVA). Rate A is the normal continuous limit; B and C are short-term and emergency limits. The B multiplier is a modeling assumption informed by the temporary 120% post-fault overload criterion in [Korea's 11th Basic Plan for Long-term Electricity Supply and Demand, reference 14](https://www.kpx.or.kr/boardDownload.es?bid=ATT&list_no=74420&seq=1#page=82). The C multiplier is a research assumption. These multipliers do not establish equipment-specific thermal capability or a universal permissible overload duration.
+
 The initial operating values correspond to January 1, hour 1 of the relevant year. The case's `Pd` and `Qd` are net loads at that operating point, after renewable, hydro, and pumped-storage injections. Annual demand and generation profiles are provided separately for time-series studies.
 
 ### Metadata and Capacity
@@ -160,6 +162,7 @@ For the data construction methodology, see the accompanying paper [KPG 193: A Sy
 
 | Version | Updated | Major changes |
 |---|---|---|
+| **v2.0.0 correction** | 2026-10-16 | Corrected AC circuit ratings in all 2022–2025 `.m` and `.mat` files to B = 1.2 × A and C = 1.5 × A; normal ratings and other case data are unchanged. Demand build summaries are excluded from distribution. |
 | **v2.0.0** | 2026-10-03 | Base-system datasets for 2022–2025; updated network cases, metadata, hourly profiles, and hydro/pumped-storage inputs |
 | **v2.0.0-preview** | 2026-06 | Previous public 2025 dataset with system-demand-based profiles, refined generator parameters, and pumped-storage metadata |
 | **v1.5** | 2025-12 | Generator locations corrected |

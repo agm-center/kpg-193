@@ -100,6 +100,10 @@ Bus and line metadata describe the network, and conventional generator metadata 
 
 Solar and wind capacities are provided by bus. `hydropower_generators_<year>.csv` provides bus-level hydro and pumped-storage capacities, identified by `Type` (`hydro` or `psh`). Hydro and pumped-storage units are not additional rows in `mpc.gen`.
 
+Bus metadata also provides the D3 shunt specifications on the original 193 buses: 8 fixed sites and 13 switched sites (38 blocks), with the same specifications for 2022–2025. `shunt_type` is `SC` (capacitor, positive) or `SHR` (reactor, negative). `step_0_mvar` through `step_4_mvar` give cumulative MVAr at 1 pu voltage; blank cells indicate no device or no such step. Fixed devices have their always-on specification in `step_0_mvar` only. Switched devices start at `step_0_mvar = 0`, followed by their cumulative switching levels.
+
+These shunt specifications have not yet been applied to the distributed `.m` and `.mat` cases: every bus `Bs` remains zero. The nonzero `step_0_mvar` of a fixed device describes its intended always-on value for a future case generation, rather than the present case state.
+
 ### Hourly Profiles
 
 Each daily CSV contains hourly observations, with days numbered 1–365, or 1–366 for 2024.

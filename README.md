@@ -3,11 +3,13 @@
 If you use the KPG 193 test system in your work, please cite:
 
 ```bibtex
-@article{song2024kpg,
-  title={KPG 193: A Synthetic Korean Power Grid Test System for Decarbonization Studies},
+@INPROCEEDINGS{11225382,
   author={Song, Geonho and Kim, Jip},
-  journal={arXiv preprint arXiv:2411.14756},
-  year={2024}
+  booktitle={2025 IEEE Power & Energy Society General Meeting (PESGM)}, 
+  title={KPG 193: A Synthetic Korean Power Grid Test System for Decarbonization Studies}, 
+  year={2025},
+  pages={1-5},
+  doi={10.1109/PESGM52009.2025.11225382}
 }
 ```
 

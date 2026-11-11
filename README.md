@@ -166,8 +166,9 @@ For the data construction methodology, see the accompanying paper [KPG 193: A Sy
 
 | Version | Updated | Major changes |
 |---|---|---|
-| **v2.0.0** | 2026-10-03 | Base-system datasets for 2022–2025; updated network cases, metadata, hourly profiles, and hydro/pumped-storage inputs |
-| **v2.0.0-preview** | 2026-06 | Previous public 2025 dataset with system-demand-based profiles, refined generator parameters, and pumped-storage metadata |
+| **v2.0.0** | 2026-10-23 | Base-shunt specifications added to bus metadata; AC branch ratings (rate B/C) corrected |
+| **v2.0.0-preview** | 2026-10-03 | Base-system datasets for 2022–2025; updated network cases, metadata, hourly profiles, and hydro/pumped-storage inputs |
+| **v2.0.0-alpha** | 2026-06 | Previous public 2025 dataset with system-demand-based profiles, refined generator parameters, and pumped-storage metadata |
 | **v1.5** | 2025-12 | Generator locations corrected |
 | **v1.4** | 2025-09 | Bus numbering standardized; clustering improved |
 | **v1.3** | 2025-07 | Renewable profiles fixed |
@@ -175,7 +176,7 @@ For the data construction methodology, see the accompanying paper [KPG 193: A Sy
 | **v1.1** | 2024-12 | Slack bus changed |
 | **v1.0** | 2024-11 | Initial public release |
 
-The previous public dataset is available as [v2.0.0-preview](https://github.com/agm-center/kpg-193/releases/tag/v2.0.0-preview).
+Earlier v2.0 datasets are available as [v2.0.0-preview](https://github.com/agm-center/kpg-193/releases/tag/v2.0.0-preview) and [v2.0.0-alpha](https://github.com/agm-center/kpg-193/releases/tag/v2.0.0-alpha).
 
 ## Documentation
 
